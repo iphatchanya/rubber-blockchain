@@ -47,7 +47,6 @@ class Controller(rpc: NodeRPCConnection) {
     @PostMapping(value = "addRecord" , headers = [ "Content-Type=multipart/form-data" ])
     fun addBasicRecord(request: HttpServletRequest): ResponseEntity<String> {
 //        val source = request.getParameter("Source").toString()
-//        val certificate = request.getParameter("Certificate").toString()
         val rubberType = request.getParameter("Rubber type").toString()
         val volume = request.getParameter("Volume").toInt()
         val price = request.getParameter("Price").toInt()
@@ -58,7 +57,7 @@ class Controller(rpc: NodeRPCConnection) {
 
 //        return try {
 //
-//            val signedTx = proxy.startTrackedFlow(::Flows, source, certificate, rubberType, volume, price, destinationParty).returnValue.getOrThrow()
+//            val signedTx = proxy.startTrackedFlow(::Flows, source rubberType, volume, price, destinationParty).returnValue.getOrThrow()
 //            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
 //
 //        } catch (ex: Throwable) {

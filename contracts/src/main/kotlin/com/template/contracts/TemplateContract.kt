@@ -22,7 +22,6 @@ class TemplateContract : Contract {
                 val out:TemplateState = tx.outputStates.first() as TemplateState
                 "The source and the destination cannot be same entity." using (out.source != out.destination)
 //                "All of the participants must be signers." using (signers.containsAll(out.participants.map { it.owningKey }))
-                "The certificate must not empty." using (out.certification.isNotEmpty())
                 "The rubber type must not empty." using (out.rubberType.isNotEmpty())
                 "The volume must greater than 0." using (out.volume > 0)
                 "The price must greater than 0." using (out.price > 0)

@@ -6,8 +6,6 @@ import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import com.r3.corda.lib.accounts.workflows.accountService
 import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount
 import com.template.contract.TemplateContract
-import com.template.flows.BroadcastToCarbonCopyReceiversFlow
-import com.template.flows.NewKeyForAccount
 import com.template.states.TemplateState
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.StartableByRPC
@@ -23,7 +21,6 @@ import net.corda.core.utilities.ProgressTracker
 @StartableByService
 @InitiatingFlow
 class Flows (val source: String,
-             val certificate: String,
              val rubberType: String,
              val volume : Int,
              val price : Int,
@@ -61,10 +58,14 @@ class Flows (val source: String,
 
         //generating State for transfer
         progressTracker.currentStep = GENERATING_TRANSACTION
-        val output = TemplateState(UUID.randomUUID(),AnonymousParty(myKey),certificate,rubberType,volume,price,targetAcctAnonymousParty)
+        val output = TemplateState(UUID.randomUUID(),AnonymousParty(myKey), rubberType, volume, price, targetAcctAnonymousParty)
         val transactionBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities.first())
         transactionBuilder.addOutputState(output)
                 .addCommand(TemplateContract.Commands.Create(), listOf(targetAcctAnonymousParty.owningKey,myKey))
+
+        progressTracker.currentStep = VERIFYING_TRANSACTION
+        // Verify that the transaction is valid.
+        transactionBuilder.verify(serviceHub)
 
         //Pass along Transaction
         progressTracker.currentStep = SIGNING_TRANSACTION
@@ -75,18 +76,16 @@ class Flows (val source: String,
         val sessionForAccountToSendTo = initiateFlow(targetAccount.host)
         val accountToMoveToSignature = subFlow(CollectSignatureFlow(locallySignedTx, sessionForAccountToSendTo, targetAcctAnonymousParty.owningKey))
         val signedByCounterParty = locallySignedTx.withAdditionalSignatures(accountToMoveToSignature)
-            progressTracker.currentStep =FINALISING_TRANSACTION
-        val fullySignedTx = subFlow(FinalityFlow(signedByCounterParty, listOf(sessionForAccountToSendTo).filter { it.counterparty != ourIdentity }))
-        val movedState = fullySignedTx.coreTransaction.outRefsOfType(
-                TemplateState::class.java
 
-        ).single()
-        return "Invoice send to " + targetAccount.host.name.organisation + "'s "+ targetAccount.name + " team."
+        progressTracker.currentStep =FINALISING_TRANSACTION
+        val fullySignedTx = subFlow(FinalityFlow(signedByCounterParty, listOf(sessionForAccountToSendTo).filter { it.counterparty != ourIdentity }))
+        val movedState = fullySignedTx.coreTransaction.outRefsOfType(TemplateState::class.java).single()
+        return "Transaction send to " + targetAccount.host.name.organisation + "'s "+ targetAccount.name + " team."
     }
 }
 
 @InitiatedBy(Flows::class)
-class SendInvoiceResponder(val counterpartySession: FlowSession) : FlowLogic<Unit>(){
+class SendTransactionResponder(val counterpartySession: FlowSession) : FlowLogic<Unit>(){
     @Suspendable
     override fun call() {
         //placeholder to record account information for later use

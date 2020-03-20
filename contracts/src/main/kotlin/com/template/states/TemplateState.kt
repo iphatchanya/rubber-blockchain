@@ -10,7 +10,6 @@ import java.util.*
 @BelongsToContract(TemplateContract::class)
 data class TemplateState(val invoiceID: UUID,
                          val source: AnonymousParty,
-                         val certification: String,
                          val rubberType: String,
                          val volume : Int,
                          val price : Int,
