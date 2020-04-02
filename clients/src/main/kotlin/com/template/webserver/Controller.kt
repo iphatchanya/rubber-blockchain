@@ -120,7 +120,7 @@ class Controller(rpc: NodeRPCConnection) {
     @PostMapping(value = "shareAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
     fun shareAccount(request: HttpServletRequest): ResponseEntity<String> {
         val accountNameShared = request.getParameter("accountNameShared").toString()
-        val shareTo = request.getParameter("shareTo")
+        val shareTo = request.getParameter("shareTo").toString()
         val shareToParty = CordaX500Name.parse(shareTo)
         val partyOfShareTo =  proxy.wellKnownPartyFromX500Name(shareToParty) ?:
         return ResponseEntity.badRequest().body("Party named $shareTo cannot be found.\n")
