@@ -39,7 +39,7 @@ object RubberFlow {
             )
         }
 
-        override val progressTracker = UserAccountFlow.UserProfile.tracker()
+        override val progressTracker = tracker()
 
         @Suspendable
         override fun call(): SignedTransaction {
