@@ -105,7 +105,7 @@ class Controller(rpc: NodeRPCConnection) {
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
     fun createNewAccount(request: HttpServletRequest): ResponseEntity<String> {
-        val accountName = request.getParameter("Account name").toString()
+        val accountName = request.getParameter("accountName").toString()
 
         return try {
             val signedTx = proxy.startTrackedFlow(::CreateNewAccount, accountName).returnValue.getOrThrow()
@@ -119,8 +119,8 @@ class Controller(rpc: NodeRPCConnection) {
 
     @PostMapping(value = "shareAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
     fun shareAccount(request: HttpServletRequest): ResponseEntity<String> {
-        val accountNameShared = request.getParameter("Account name").toString()
-        val shareTo = request.getParameter("Share to")
+        val accountNameShared = request.getParameter("accountNameShared").toString()
+        val shareTo = request.getParameter("shareTo")
         val shareToParty = CordaX500Name.parse(shareTo)
         val partyOfShareTo =  proxy.wellKnownPartyFromX500Name(shareToParty) ?:
         return ResponseEntity.badRequest().body("Party named $shareTo cannot be found.\n")
@@ -137,11 +137,11 @@ class Controller(rpc: NodeRPCConnection) {
 
     @PostMapping(value = "addRecordToTransaction" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
     fun addRecordToTransaction(request: HttpServletRequest): ResponseEntity<String> {
-        val source = request.getParameter("Source").toString()
-        val rubberType = request.getParameter("Rubber type").toString()
-        val volume = request.getParameter("Volume").toInt()
-        val price = request.getParameter("Price").toInt()
-        val destination = request.getParameter("Destination").toString()
+        val source = request.getParameter("source").toString()
+        val rubberType = request.getParameter("rubberType").toString()
+        val volume = request.getParameter("volume").toInt()
+        val price = request.getParameter("price").toInt()
+        val destination = request.getParameter("destination").toString()
 
         return try {
             val signedTx = proxy.startTrackedFlow(::AddTransaction, source, rubberType, volume, price, destination).returnValue.getOrThrow()
