@@ -1,9 +1,9 @@
 package com.template.webserver
 
 //import com.template.flow.Flows
-import com.template.flows.UserAccountFlow.UserProfile
-import com.template.flows.RubberFlow.NewRecord
-import com.template.flows.Flows
+import com.template.flows.TransactionFlow.AddTransaction
+//import com.template.flows.UserAccountFlow.UserProfile
+//import com.template.flows.RubberFlow.NewRecord
 import com.template.states.TemplateState
 import com.template.states.TransactionRecordState
 import com.template.states.UserState
@@ -62,64 +62,60 @@ class Controller(rpc: NodeRPCConnection) {
 //    @GetMapping(value = "getAllRecord", produces = ["text/plain"])
 //    private fun getAllRecord() = proxy.vaultQueryBy<TemplateState>().states.toString()
 
-    @PostMapping(value = "users" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
-    fun users(request: HttpServletRequest): ResponseEntity<String> {
-        val name = request.getParameter("name").toString()
-        val certification = request.getParameter("certification").toString()
-        val destination = request.getParameter("destination")
-        val destinationParty = CordaX500Name.parse(destination)
-        val partyDestination = proxy.wellKnownPartyFromX500Name(destinationParty) ?:
-        return ResponseEntity.badRequest().body("Party named $destination cannot be found.\n")
-
-        return try {
-            val signedTx = proxy.startTrackedFlow(::UserProfile, name, certification, partyDestination).returnValue.getOrThrow()
-            ResponseEntity.status(HttpStatus.CREATED).body("Register successfully.")
-
-        } catch (ex: Throwable) {
-            logger.error(ex.message, ex)
-            ResponseEntity.badRequest().body(ex.message!!)
-        }
-    }
-
-    @PostMapping(value = "addRecord" , headers = [ "Content-Type=multipart/form-data" ])
-    fun addRecord(request: HttpServletRequest): ResponseEntity<String> {
-        val rubberType = request.getParameter("rubberType").toString()
-        val volume = request.getParameter("volume").toInt()
-        val price = request.getParameter("price").toInt()
-        val destination = request.getParameter("destination")
-        val destinationParty = CordaX500Name.parse(destination)
-        val partyDestination = proxy.wellKnownPartyFromX500Name(destinationParty) ?:
-        return ResponseEntity.badRequest().body("Party named $destination cannot be found.\n")
-
-        return try {
-            val signedTx = proxy.startTrackedFlow(::NewRecord, rubberType, volume, price, partyDestination).returnValue.getOrThrow()
-            ResponseEntity.status(HttpStatus.CREATED).body("Register successfully.")
-
-        } catch (ex: Throwable) {
-            logger.error(ex.message, ex)
-            ResponseEntity.badRequest().body(ex.message!!)
-        }
-    }
-
-
-//    @PostMapping(value = "addRecord" , headers = [ "Content-Type=multipart/form-data" ])
-//    fun addBasicRecord(request: HttpServletRequest): ResponseEntity<String> {
-//        val source = request.getParameter("Source").toString()
-//        val rubberType = request.getParameter("Rubber type").toString()
-//        val volume = request.getParameter("Volume").toInt()
-//        val price = request.getParameter("Price").toInt()
-//
-//        val destination = request.getParameter("Destination")
+//    @PostMapping(value = "users" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
+//    fun users(request: HttpServletRequest): ResponseEntity<String> {
+//        val name = request.getParameter("name").toString()
+//        val certification = request.getParameter("certification").toString()
+//        val destination = request.getParameter("destination")
 //        val destinationParty = CordaX500Name.parse(destination)
+//        val partyDestination = proxy.wellKnownPartyFromX500Name(destinationParty) ?:
 //        return ResponseEntity.badRequest().body("Party named $destination cannot be found.\n")
 //
-////        return try {
-//////            val signedTx = proxy.startTrackedFlow(::Flows, source, rubberType, volume, price, destinationParty).returnValue.getOrThrow()
-//////            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
-//////
-//////        } catch (ex: Throwable) {
-//////            logger.error(ex.message, ex)
-//////            ResponseEntity.badRequest().body(ex.message!!)
-//////        }
+//        return try {
+//            val signedTx = proxy.startTrackedFlow(::UserProfile, name, certification, partyDestination).returnValue.getOrThrow()
+//            ResponseEntity.status(HttpStatus.CREATED).body("Register successfully.")
+//
+//        } catch (ex: Throwable) {
+//            logger.error(ex.message, ex)
+//            ResponseEntity.badRequest().body(ex.message!!)
+//        }
 //    }
+//
+//    @PostMapping(value = "addRecord" , headers = [ "Content-Type=multipart/form-data" ])
+//    fun addRecord(request: HttpServletRequest): ResponseEntity<String> {
+//        val rubberType = request.getParameter("rubberType").toString()
+//        val volume = request.getParameter("volume").toInt()
+//        val price = request.getParameter("price").toInt()
+//        val destination = request.getParameter("destination")
+//        val destinationParty = CordaX500Name.parse(destination)
+//        val partyDestination = proxy.wellKnownPartyFromX500Name(destinationParty) ?:
+//        return ResponseEntity.badRequest().body("Party named $destination cannot be found.\n")
+//
+//        return try {
+//            val signedTx = proxy.startTrackedFlow(::NewRecord, rubberType, volume, price, partyDestination).returnValue.getOrThrow()
+//            ResponseEntity.status(HttpStatus.CREATED).body("Register successfully.")
+//
+//        } catch (ex: Throwable) {
+//            logger.error(ex.message, ex)
+//            ResponseEntity.badRequest().body(ex.message!!)
+//        }
+//    }
+
+    @PostMapping(value = "addRecordToTransaction" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
+    fun addBasicRecord(request: HttpServletRequest): ResponseEntity<String> {
+        val source = request.getParameter("Source").toString()
+        val rubberType = request.getParameter("Rubber type").toString()
+        val volume = request.getParameter("Volume").toInt()
+        val price = request.getParameter("Price").toInt()
+        val destination = request.getParameter("Destination").toString()
+
+        return try {
+            val signedTx = proxy.startTrackedFlow(::AddTransaction, source, rubberType, volume, price, destination).returnValue.getOrThrow()
+            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
+
+        } catch (ex: Throwable) {
+            logger.error(ex.message, ex)
+            ResponseEntity.badRequest().body(ex.message!!)
+        }
+    }
 }
