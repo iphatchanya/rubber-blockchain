@@ -81,7 +81,7 @@ class Controller(rpc: NodeRPCConnection) {
         }
     }
 
-    @PostMapping(value = "addRecord" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
+    @PostMapping(value = "addRecord" , headers = [ "Content-Type=multipart/form-data" ])
     fun addRecord(request: HttpServletRequest): ResponseEntity<String> {
         val rubberType = request.getParameter("rubberType").toString()
         val volume = request.getParameter("volume").toInt()
