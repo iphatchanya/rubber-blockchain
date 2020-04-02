@@ -17,7 +17,8 @@ object RubberFlow {
     class NewRecord(val rubberType: String,
                     val volume: Int,
                     val price: Int,
-                    val destination: Party) : FlowLogic<SignedTransaction>() {
+                    val destination: Party,
+                    val attachmentHash : SecureHash) : FlowLogic<SignedTransaction>() {
         companion object {
             object GENERATING_TRANSACTION : ProgressTracker.Step("Generating transaction to add new account")
             object VERIFYING_TRANSACTION : ProgressTracker.Step("Verifying contract constraints.")
@@ -53,6 +54,7 @@ object RubberFlow {
             val txBuilder = TransactionBuilder(notary)
                     .addOutputState(transactionRecordState, RubberContract.rubberContractId)
                     .addCommand(txCommand)
+                    .addAttachment(attachmentHash)
 
             progressTracker.currentStep = VERIFYING_TRANSACTION
             // Verify that the transaction is valid.

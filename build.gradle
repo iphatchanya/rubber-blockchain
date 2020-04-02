@@ -53,6 +53,7 @@ allprojects {
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
         maven { url 'https://jitpack.io' }
         maven { url "https://repo.gradle.org/gradle/libs-releases-local" }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
@@ -65,10 +66,10 @@ allprojects {
     }
 
     jar {
-        // Don't include log config files.
+//         Don't include log config files.
         exclude "**/log4j2*.xml"
-        // We need this because log4j2.xml is pulled in from multiple dependency JARs.
-        // JAR signing will fail if there are multiple files with the same name.
+//         We need this because log4j2.xml is pulled in from multiple dependency JARs.
+//         JAR signing will fail if there are multiple files with the same name.
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
         // This makes the JAR's SHA-256 hash repeatable.
