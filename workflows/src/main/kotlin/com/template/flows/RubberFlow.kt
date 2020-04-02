@@ -12,6 +12,8 @@ import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.ProgressTracker
 
 object RubberFlow {
+    @InitiatingFlow
+    @StartableByRPC
 
     class NewRecord(val rubberType: String,
                     val volume: Int,
