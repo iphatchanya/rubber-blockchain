@@ -1,6 +1,8 @@
 package com.template.webserver
 
 //import com.template.flow.Flows
+import com.template.flows.CreateNewAccount
+import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
 //import com.template.flows.UserAccountFlow.UserProfile
 //import com.template.flows.RubberFlow.NewRecord
@@ -101,8 +103,40 @@ class Controller(rpc: NodeRPCConnection) {
 //        }
 //    }
 
+    @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
+    fun createNewAccount(request: HttpServletRequest): ResponseEntity<String> {
+        val accountName = request.getParameter("Account name").toString()
+
+        return try {
+            val signedTx = proxy.startTrackedFlow(::CreateNewAccount, accountName).returnValue.getOrThrow()
+            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
+
+        } catch (ex: Throwable) {
+            logger.error(ex.message, ex)
+            ResponseEntity.badRequest().body(ex.message!!)
+        }
+    }
+
+    @PostMapping(value = "shareAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
+    fun shareAccount(request: HttpServletRequest): ResponseEntity<String> {
+        val accountNameShared = request.getParameter("Account name").toString()
+        val shareTo = request.getParameter("Share to")
+        val shareToParty = CordaX500Name.parse(shareTo)
+        val partyOfShareTo =  proxy.wellKnownPartyFromX500Name(shareToParty) ?:
+        return ResponseEntity.badRequest().body("Party named $shareTo cannot be found.\n")
+
+        return try {
+            val signedTx = proxy.startTrackedFlow(::ShareAccount, accountNameShared, partyOfShareTo).returnValue.getOrThrow()
+            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
+
+        } catch (ex: Throwable) {
+            logger.error(ex.message, ex)
+            ResponseEntity.badRequest().body(ex.message!!)
+        }
+    }
+
     @PostMapping(value = "addRecordToTransaction" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
-    fun addBasicRecord(request: HttpServletRequest): ResponseEntity<String> {
+    fun addRecordToTransaction(request: HttpServletRequest): ResponseEntity<String> {
         val source = request.getParameter("Source").toString()
         val rubberType = request.getParameter("Rubber type").toString()
         val volume = request.getParameter("Volume").toInt()

@@ -11,7 +11,7 @@ import net.corda.core.identity.Party
 @StartableByRPC
 @StartableByService
 @InitiatingFlow
-class ShareAccountTo(
+class ShareAccount(
         private val accountNameShared: String,
         private val shareTo: Party
 ) : FlowLogic<String>(){
