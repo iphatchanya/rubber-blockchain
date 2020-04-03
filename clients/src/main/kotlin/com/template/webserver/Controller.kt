@@ -4,7 +4,6 @@ import com.r3.corda.lib.accounts.workflows.accountService
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
-import com.template.flows.ViewAllAccounts
 import com.template.flows.ViewMyAccounts
 //import com.template.flows.UserAccountFlow.UserProfile
 //import com.template.flows.RubberFlow.NewRecord
