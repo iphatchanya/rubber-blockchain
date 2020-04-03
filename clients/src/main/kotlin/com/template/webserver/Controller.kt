@@ -4,6 +4,7 @@ package com.template.webserver
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
+import com.template.flows.ViewMyAccounts
 //import com.template.flows.UserAccountFlow.UserProfile
 //import com.template.flows.RubberFlow.NewRecord
 import com.template.states.TemplateState
@@ -56,10 +57,11 @@ class Controller(rpc: NodeRPCConnection) {
 //    }
 
     @GetMapping(value = "getAllUser", produces = ["text/plain"])
-    private fun getAllUser() = proxy.vaultQueryBy<UserState>().states.toString()
+//    private fun getAllUser() = proxy.vaultQueryBy<UserState>().states.toString()
+    private fun getAllUser() = proxy.vaultQueryBy<TemplateState>().states.toString()
 
     @GetMapping(value = "getAllTransaction", produces = ["text/plain"])
-    private fun getAllTransation() = proxy.vaultQueryBy<TransactionRecordState>().states.toString()
+    private fun getAllTransation() = proxy.vaultQueryBy<TemplateState>().states.toString()
 
 //    @GetMapping(value = "getAllRecord", produces = ["text/plain"])
 //    private fun getAllRecord() = proxy.vaultQueryBy<TemplateState>().states.toString()
