@@ -1,9 +1,10 @@
 package com.template.webserver
 
-//import com.template.flow.Flows
+import com.r3.corda.lib.accounts.workflows.accountService
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
+import com.template.flows.ViewAllAccounts
 import com.template.flows.ViewMyAccounts
 //import com.template.flows.UserAccountFlow.UserProfile
 //import com.template.flows.RubberFlow.NewRecord
@@ -59,6 +60,7 @@ class Controller(rpc: NodeRPCConnection) {
     @GetMapping(value = "getAllUser", produces = ["text/plain"])
 //    private fun getAllUser() = proxy.vaultQueryBy<UserState>().states.toString()
     private fun getAllUser() = proxy.vaultQueryBy<TemplateState>().states.toString()
+//    private fun getAllUser() = List<StateAndRef<AccountInfo>> = accountService.allAccounts()
 
     @GetMapping(value = "getAllTransaction", produces = ["text/plain"])
     private fun getAllTransation() = proxy.vaultQueryBy<TemplateState>().states.toString()
@@ -111,8 +113,8 @@ class Controller(rpc: NodeRPCConnection) {
 
         return try {
             val signedTx = proxy.startTrackedFlow(::CreateNewAccount, accountName).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
-            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
+            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
+//            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
 
         } catch (ex: Throwable) {
             logger.error(ex.message, ex)
@@ -130,8 +132,8 @@ class Controller(rpc: NodeRPCConnection) {
 
         return try {
             val signedTx = proxy.startTrackedFlow(::ShareAccount, accountNameShared, partyOfShareTo).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
-            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
+            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
+//            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
 
         } catch (ex: Throwable) {
             logger.error(ex.message, ex)
@@ -149,8 +151,8 @@ class Controller(rpc: NodeRPCConnection) {
 
         return try {
             val signedTx = proxy.startTrackedFlow(::AddTransaction, source, rubberType, volume, price, destination).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
-            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
+            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
+//            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
 
         } catch (ex: Throwable) {
             logger.error(ex.message, ex)

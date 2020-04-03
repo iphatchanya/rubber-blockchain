@@ -13,13 +13,13 @@ import net.corda.core.node.services.vault.QueryCriteria
 @StartableByService
 @InitiatingFlow
 class ViewInboxByAccount(
-        val acctname : String
+        val accountname : String
 ) : FlowLogic<List<String>>() {
 
     @Suspendable
     override fun call(): List<String> {
 
-        val myAccount = accountService.accountInfo(acctname).single().state.data
+        val myAccount = accountService.accountInfo(accountname).single().state.data
         val criteria = QueryCriteria.VaultQueryCriteria(
                 externalIds = listOf(myAccount.identifier.id)
         )

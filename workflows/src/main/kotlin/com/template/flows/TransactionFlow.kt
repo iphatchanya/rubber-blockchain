@@ -53,7 +53,7 @@ object TransactionFlow {
         override val progressTracker = tracker()
         @Suspendable
         override fun call(): String {
-            val notaty = serviceHub.networkMapCache.notaryIdentities.first()
+
             //Generate key for transaction (create from destination to source)
             progressTracker.currentStep = GENERATING_KEYS
             val myAccount = accountService.accountInfo(destination).single().state.data
@@ -64,7 +64,7 @@ object TransactionFlow {
             //generating State for transfer
             progressTracker.currentStep = GENERATING_TRANSACTION
             val output = TemplateState(UUID.randomUUID(), AnonymousParty(myKey), rubberType, volume, price, targetAcctAnonymousParty)
-            val transactionBuilder = TransactionBuilder(notaty)
+            val transactionBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities.first())
             transactionBuilder.addOutputState(output)
                     .addCommand(TemplateContract.Commands.Create(), listOf(targetAcctAnonymousParty.owningKey, myKey))
 
@@ -85,7 +85,7 @@ object TransactionFlow {
             progressTracker.currentStep = FINALISING_TRANSACTION
             val fullySignedTx = subFlow(FinalityFlow(signedByCounterParty, listOf(sessionForAccountToSendTo).filter { it.counterparty != ourIdentity }))
             val movedState = fullySignedTx.coreTransaction.outRefsOfType(TemplateState::class.java).single()
-            return "Transaction send to " + targetAccount.host.name.organisation + "'s " + targetAccount.name + " team."
+            return "Transaction send to " + targetAccount.name + "(" + targetAccount.host.name.organisation + ")."
         }
     }
 
