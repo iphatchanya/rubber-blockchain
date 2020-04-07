@@ -1,8 +1,8 @@
 package com.template.contracts
 
+import com.template.states.TemplateState
 import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
-import com.template.states.TransactionRecordState
 import java.security.PublicKey
 
 class TransactionContract : Contract {
@@ -27,7 +27,7 @@ class TransactionContract : Contract {
 
     private fun verifyAddTransaction (tx: LedgerTransaction , signers: Set<PublicKey>)  = requireThat {
 
-        val out = tx.outputsOfType<TransactionRecordState>().single()
+        val out = tx.outputsOfType<TemplateState>().single()
         "No input when create." using (tx.inputStates.isEmpty())
 //            "Only one output state should be created." using (tx.outputStates.size == 1)
         "The source and the destination cannot be same entity." using (out.source != out.destination)

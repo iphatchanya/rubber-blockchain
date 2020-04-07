@@ -15,4 +15,5 @@ data class TemplateState(val invoiceID: UUID,
                          val price : Int,
                          val destination: AnonymousParty) : ContractState {
     override val participants: List<AbstractParty> get() = listOfNotNull(destination,source).map { it }
+//    override val participants: List<AbstractParty> get() = listOf(destination,source)
 }
