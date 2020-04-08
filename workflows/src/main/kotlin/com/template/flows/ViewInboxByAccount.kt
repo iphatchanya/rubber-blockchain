@@ -13,21 +13,23 @@ import net.corda.core.node.services.vault.QueryCriteria
 @StartableByService
 @InitiatingFlow
 class ViewInboxByAccount(
-        val accountname : String
+        val accountName : String
 ) : FlowLogic<List<String>>() {
 
     @Suspendable
     override fun call(): List<String> {
 
-        val myAccount = accountService.accountInfo(accountname).single().state.data
+        val myAccount = accountService.accountInfo(accountName).single().state.data
         val criteria = QueryCriteria.VaultQueryCriteria(
                 externalIds = listOf(myAccount.identifier.id)
         )
         val invoices = serviceHub.vaultService.queryBy(
                 contractStateType = TemplateState::class.java,
                 criteria = criteria
-        ).states.map { "\n" +"Invoice State : " +it.state.data}
-
+        ).states.map { "\n" +"Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                ", Source = " + it.state.data.source + ", Rubber type = " + it.state.data.rubberType +
+                ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
+                ", Destination = " + it.state.data.destination}
 
         return invoices
     }

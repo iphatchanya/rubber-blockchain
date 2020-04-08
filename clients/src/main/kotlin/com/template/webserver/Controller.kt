@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
 
-//val SERVICE_NAMES = listOf("Notary", "Network Map Service")
-
 @RestController
 @RequestMapping("/blockchainTransaction/") // The paths for HTTP requests are relative to this base path.
 class Controller(rpc: NodeRPCConnection) {

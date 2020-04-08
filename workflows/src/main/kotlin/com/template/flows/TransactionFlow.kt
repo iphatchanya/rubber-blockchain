@@ -51,6 +51,8 @@ object TransactionFlow {
         }
 
         override val progressTracker = tracker()
+
+
         @Suspendable
         override fun call(): String {
 
@@ -59,17 +61,17 @@ object TransactionFlow {
             val myAccount = accountService.accountInfo(destination).single().state.data
             val myKey = subFlow(NewKeyForAccount(myAccount.identifier.id)).owningKey
             val targetAccount = accountService.accountInfo(source).single().state.data
-            val targetAcctAnonymousParty = subFlow(RequestKeyForAccount(targetAccount))
+            val targetAccountAnonymousParty = subFlow(RequestKeyForAccount(targetAccount))
 
-            //generating State for transfer
+            //Generating State for transfer
             progressTracker.currentStep = GENERATING_TRANSACTION
-            val output = TemplateState(UUID.randomUUID(), AnonymousParty(myKey), rubberType, volume, price, targetAcctAnonymousParty)
+            val output = TemplateState(UUID.randomUUID(), AnonymousParty(myKey), rubberType, volume, price, targetAccountAnonymousParty)
             val transactionBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities.first())
             transactionBuilder.addOutputState(output)
-                    .addCommand(TemplateContract.Commands.Create(), listOf(targetAcctAnonymousParty.owningKey, myKey))
+                    .addCommand(TemplateContract.Commands.Create(), listOf(targetAccountAnonymousParty.owningKey, myKey))
 
-            progressTracker.currentStep = VERIFYING_TRANSACTION
             // Verify that the transaction is valid.
+            progressTracker.currentStep = VERIFYING_TRANSACTION
             transactionBuilder.verify(serviceHub)
 
             //Pass along Transaction
@@ -79,7 +81,7 @@ object TransactionFlow {
             //Collect signs
             progressTracker.currentStep = GATHERING_SIGS
             val sessionForAccountToSendTo = initiateFlow(targetAccount.host)
-            val accountToMoveToSignature = subFlow(CollectSignatureFlow(locallySignedTx, sessionForAccountToSendTo, targetAcctAnonymousParty.owningKey))
+            val accountToMoveToSignature = subFlow(CollectSignatureFlow(locallySignedTx, sessionForAccountToSendTo, targetAccountAnonymousParty.owningKey))
             val signedByCounterParty = locallySignedTx.withAdditionalSignatures(accountToMoveToSignature)
 
             progressTracker.currentStep = FINALISING_TRANSACTION
@@ -93,10 +95,10 @@ object TransactionFlow {
     class SendTransactionResponder(val counterpartySession: FlowSession) : FlowLogic<Unit>() {
         @Suspendable
         override fun call() {
-            //placeholder to record account information for later use
+            //Placeholder to record account information for later use
             val accountMovedTo = AtomicReference<AccountInfo>()
 
-            //extract account information from transaction
+            //Extract account information from transaction
             val transactionSigner = object : SignTransactionFlow(counterpartySession) {
                 override fun checkTransaction(tx: SignedTransaction) {
                     val keyStateMovedTo = tx.coreTransaction.outRefsOfType(TemplateState::class.java).first().state.data.destination
@@ -108,10 +110,14 @@ object TransactionFlow {
                     }
                 }
             }
-            //record and finalize transaction
+            //Record and finalize transaction
             val transaction = subFlow(transactionSigner)
             if (counterpartySession.counterparty != serviceHub.myInfo.legalIdentities.first()) {
-                val recievedTx = subFlow(ReceiveFinalityFlow(counterpartySession, expectedTxId = transaction.id, statesToRecord = StatesToRecord.ALL_VISIBLE))
+                val recievedTx = subFlow(
+                        ReceiveFinalityFlow(
+                                counterpartySession,
+                                expectedTxId = transaction.id,
+                                statesToRecord = StatesToRecord.ALL_VISIBLE))
                 val accountInfo = accountMovedTo.get()
                 if (accountInfo != null) {
                     subFlow(BroadcastToCarbonCopyReceiversFlow(accountInfo, recievedTx.coreTransaction.outRefsOfType(TemplateState::class.java).first()))
