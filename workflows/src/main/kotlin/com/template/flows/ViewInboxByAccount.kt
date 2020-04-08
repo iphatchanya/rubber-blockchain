@@ -27,9 +27,9 @@ class ViewInboxByAccount(
                 contractStateType = TransactionState::class.java,
                 criteria = criteria
         ).states.map { "\n" +"Invoice State : Invoice ID = " + it.state.data.invoiceID +
-                ", Source = " + it.state.data.source + ", Rubber type = " + it.state.data.rubberType +
+                ", Source = " + it.state.data.sender + ", Rubber type = " + it.state.data.rubberType +
                 ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
-                ", Destination = " + it.state.data.destination}
+                ", Destination = " + it.state.data.recipient}
 
         return invoices
     }

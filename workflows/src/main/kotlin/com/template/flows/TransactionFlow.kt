@@ -101,7 +101,7 @@ object TransactionFlow {
             //Extract account information from transaction
             val transactionSigner = object : SignTransactionFlow(counterpartySession) {
                 override fun checkTransaction(tx: SignedTransaction) {
-                    val keyStateMovedTo = tx.coreTransaction.outRefsOfType(TransactionState::class.java).first().state.data.destination
+                    val keyStateMovedTo = tx.coreTransaction.outRefsOfType(TransactionState::class.java).first().state.data.recipient
                     keyStateMovedTo?.let {
                         accountMovedTo.set(accountService.accountInfo(keyStateMovedTo.owningKey)?.state?.data)
                     }
