@@ -1,14 +1,9 @@
 package com.template.contract
 
 import com.template.contract.TemplateContract
-import com.template.states.TemplateState
-import net.corda.core.identity.AnonymousParty
 import net.corda.core.identity.CordaX500Name
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
-import net.corda.testing.node.ledger
-import org.junit.Test
-import java.util.*
 
 class ContractTests {
     private val ledgerServices = MockServices(listOf("com.template.contract"))

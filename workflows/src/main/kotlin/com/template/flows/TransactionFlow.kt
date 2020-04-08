@@ -5,8 +5,8 @@ import co.paralleluniverse.fibers.Suspendable
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import com.r3.corda.lib.accounts.workflows.accountService
 import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount
-import com.template.contract.TemplateContract
-import com.template.states.TemplateState
+import com.template.contracts.TransactionContract
+import com.template.states.TransactionState
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.StartableByRPC
 import net.corda.core.identity.AnonymousParty
@@ -58,21 +58,21 @@ object TransactionFlow {
 
             //Generate key for transaction (create from destination to source)
             progressTracker.currentStep = GENERATING_KEYS
-            val myAccount = accountService.accountInfo(destination).single().state.data
+            val myAccount = accountService.accountInfo(source).single().state.data
             val myKey = subFlow(NewKeyForAccount(myAccount.identifier.id)).owningKey
-            val targetAccount = accountService.accountInfo(source).single().state.data
+            val targetAccount = accountService.accountInfo(destination).single().state.data
             val targetAccountAnonymousParty = subFlow(RequestKeyForAccount(targetAccount))
 
             //Generating State for transfer
             progressTracker.currentStep = GENERATING_TRANSACTION
-            val output = TemplateState(UUID.randomUUID(), AnonymousParty(myKey), rubberType, volume, price, targetAccountAnonymousParty)
+            val output = TransactionState(UUID.randomUUID(), AnonymousParty(myKey), rubberType, volume, price, targetAccountAnonymousParty)
             val transactionBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities.first())
             transactionBuilder.addOutputState(output)
-                    .addCommand(TemplateContract.Commands.Create(), listOf(targetAccountAnonymousParty.owningKey, myKey))
+                    .addCommand(TransactionContract.Commands.Create(), listOf(targetAccountAnonymousParty.owningKey, myKey))
 
-            // Verify that the transaction is valid.
-            progressTracker.currentStep = VERIFYING_TRANSACTION
-            transactionBuilder.verify(serviceHub)
+//            // Verify that the transaction is valid.
+//            progressTracker.currentStep = VERIFYING_TRANSACTION
+//            transactionBuilder.verify(serviceHub)
 
             //Pass along Transaction
             progressTracker.currentStep = SIGNING_TRANSACTION
@@ -86,7 +86,7 @@ object TransactionFlow {
 
             progressTracker.currentStep = FINALISING_TRANSACTION
             val fullySignedTx = subFlow(FinalityFlow(signedByCounterParty, listOf(sessionForAccountToSendTo).filter { it.counterparty != ourIdentity }))
-            val movedState = fullySignedTx.coreTransaction.outRefsOfType(TemplateState::class.java).single()
+            val movedState = fullySignedTx.coreTransaction.outRefsOfType(TransactionState::class.java).single()
             return "Transaction send to " + targetAccount.name + "(" + targetAccount.host.name.organisation + ")."
         }
     }
@@ -101,7 +101,7 @@ object TransactionFlow {
             //Extract account information from transaction
             val transactionSigner = object : SignTransactionFlow(counterpartySession) {
                 override fun checkTransaction(tx: SignedTransaction) {
-                    val keyStateMovedTo = tx.coreTransaction.outRefsOfType(TemplateState::class.java).first().state.data.destination
+                    val keyStateMovedTo = tx.coreTransaction.outRefsOfType(TransactionState::class.java).first().state.data.destination
                     keyStateMovedTo?.let {
                         accountMovedTo.set(accountService.accountInfo(keyStateMovedTo.owningKey)?.state?.data)
                     }
@@ -120,7 +120,7 @@ object TransactionFlow {
                                 statesToRecord = StatesToRecord.ALL_VISIBLE))
                 val accountInfo = accountMovedTo.get()
                 if (accountInfo != null) {
-                    subFlow(BroadcastToCarbonCopyReceiversFlow(accountInfo, recievedTx.coreTransaction.outRefsOfType(TemplateState::class.java).first()))
+                    subFlow(BroadcastToCarbonCopyReceiversFlow(accountInfo, recievedTx.coreTransaction.outRefsOfType(TransactionState::class.java).first()))
                 }
             }
         }

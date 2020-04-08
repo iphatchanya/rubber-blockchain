@@ -1,14 +1,10 @@
 package com.template.webserver
 
-import com.r3.corda.lib.accounts.workflows.accountService
 import com.r3.corda.lib.accounts.workflows.flows.AllAccounts
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
-import com.template.flows.ViewMyAccounts
-//import com.template.flows.UserAccountFlow.UserProfile
-//import com.template.flows.RubberFlow.NewRecord
-import com.template.states.TemplateState
+import com.template.states.TransactionState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.messaging.startFlow
@@ -55,8 +51,8 @@ class Controller(rpc: NodeRPCConnection) {
     }
 
     @GetMapping(value = [ "getRecords" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    fun getRecords() : ResponseEntity<List<StateAndRef<TemplateState>>> {
-        return ResponseEntity.ok(proxy.vaultQueryBy<TemplateState>().states)
+    fun getRecords() : ResponseEntity<List<StateAndRef<TransactionState>>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
     }
 
     @GetMapping(value = "getAllUser", produces = ["text/plain"])
@@ -69,14 +65,14 @@ class Controller(rpc: NodeRPCConnection) {
 //    private fun getAllUser() = List<StateAndRef<AccountInfo>> = accountService.allAccounts()
 
     @GetMapping(value = "getAllTransaction", produces = ["text/plain"])
-    private fun getAllTransation() = proxy.vaultQueryBy<TemplateState>().states.toString()
+    private fun getAllTransation() = proxy.vaultQueryBy<TransactionState>().states.toString()
 //    private fun getAllTransaction() : ResponseEntity<List<StateAndRef<TemplateState>>> {
 //        return ResponseEntity.ok(proxy.vaultQueryBy<TemplateState>().states)
 //    }
 
     @GetMapping(value = [ "getMyTransaction" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    fun getMyTransaction(): ResponseEntity<List<StateAndRef<TemplateState>>>  {
-        val myTransaction = proxy.vaultQueryBy<TemplateState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
+    fun getMyTransaction(): ResponseEntity<List<StateAndRef<TransactionState>>>  {
+        val myTransaction = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
         return ResponseEntity.ok(myTransaction)
     }
 
@@ -86,8 +82,6 @@ class Controller(rpc: NodeRPCConnection) {
 
         return try {
             val signedTx = proxy.startTrackedFlow(::CreateNewAccount, accountName).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
-//            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
             ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("{\"status\":\"OK\"}")
 
         } catch (ex: Throwable) {
@@ -106,8 +100,6 @@ class Controller(rpc: NodeRPCConnection) {
 
         return try {
             val signedTx = proxy.startTrackedFlow(::ShareAccount, accountNameShared, partyOfShareTo).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
-//            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
             ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("{\"status\":\"OK\"}")
 
         } catch (ex: Throwable) {
@@ -126,8 +118,6 @@ class Controller(rpc: NodeRPCConnection) {
 
         return try {
             val signedTx = proxy.startTrackedFlow(::AddTransaction, source, rubberType, volume, price, destination).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Add Record successfully.")
-//            ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("Add Record successfully.")
             ResponseEntity.status(HttpStatus.CREATED).header("Access-Control-Allow-Origin","*").body("{\"status\":\"OK\"}")
 
         } catch (ex: Throwable) {

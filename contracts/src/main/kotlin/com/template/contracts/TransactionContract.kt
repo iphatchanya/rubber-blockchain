@@ -1,39 +1,35 @@
 package com.template.contracts
 
-import com.template.states.TemplateState
+import com.template.states.TransactionState
 import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
-import java.security.PublicKey
 
 class TransactionContract : Contract {
     companion object {
-        @JvmStatic
-        val transactionContractId = "com.template.contract.TransactionContract"
+        const val ID = "com.template.contracts.TemplateContract"
     }
 
-    interface Commands : CommandData
-    class AddTransaction : TypeOnlyCommandData(), Commands
-
-    @Throws(IllegalArgumentException::class)
     override fun verify(tx: LedgerTransaction) {
-        val rubberCommand = tx.commands.requireSingleCommand<Commands>()
-        val setOfSigners = rubberCommand.signers.toSet()
+        val command = tx.commands.requireSingleCommand<Commands.Create>()
 
-        when (rubberCommand.value) {
-            is AddTransaction -> verifyAddTransaction(tx, setOfSigners)
-            else -> throw IllegalArgumentException("Unrecognised command.")
+        requireThat {
+
+        }
+        when (command.value) {
+            is Commands.Create -> requireThat {
+                "No input when create." using (tx.inputStates.isEmpty())
+                "Only one output state should be created." using (tx.outputStates.size == 1)
+                val out: TransactionState = tx.outputStates.first() as TransactionState
+                "The source and the destination cannot be same entity." using (out.source != out.destination)
+//                "All of the participants must be signers." using (signers.containsAll(out.participants.map { it.owningKey }))
+                "The rubber type must not empty." using (out.rubberType.isNotEmpty())
+                "The volume must greater than 0." using (out.volume > 0)
+                "The price must greater than 0." using (out.price > 0)
+            }
         }
     }
 
-    private fun verifyAddTransaction (tx: LedgerTransaction , signers: Set<PublicKey>)  = requireThat {
-
-        val out = tx.outputsOfType<TemplateState>().single()
-        "No input when create." using (tx.inputStates.isEmpty())
-//            "Only one output state should be created." using (tx.outputStates.size == 1)
-        "The source and the destination cannot be same entity." using (out.source != out.destination)
-        "The rubber type must not empty." using (out.rubberType.isNotEmpty())
-        "The volume must greater than 0." using (out.volume > 0)
-        "The price must greater than 0." using (out.price > 0)
-
+    interface Commands : CommandData {
+        class Create : Commands
     }
 }

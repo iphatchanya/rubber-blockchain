@@ -3,7 +3,7 @@ package com.template.flows
 import net.corda.core.flows.*
 import co.paralleluniverse.fibers.Suspendable
 import com.r3.corda.lib.accounts.workflows.accountService
-import com.template.states.TemplateState
+import com.template.states.TransactionState
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.StartableByRPC
 import net.corda.core.node.services.vault.QueryCriteria
@@ -24,7 +24,7 @@ class ViewInboxByAccount(
                 externalIds = listOf(myAccount.identifier.id)
         )
         val invoices = serviceHub.vaultService.queryBy(
-                contractStateType = TemplateState::class.java,
+                contractStateType = TransactionState::class.java,
                 criteria = criteria
         ).states.map { "\n" +"Invoice State : Invoice ID = " + it.state.data.invoiceID +
                 ", Source = " + it.state.data.source + ", Rubber type = " + it.state.data.rubberType +
