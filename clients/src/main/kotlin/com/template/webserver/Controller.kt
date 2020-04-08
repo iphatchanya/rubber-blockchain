@@ -72,7 +72,7 @@ class Controller(rpc: NodeRPCConnection) {
 
     @GetMapping(value = [ "getMyTransaction" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
     fun getMyTransaction(): ResponseEntity<List<StateAndRef<TransactionState>>>  {
-        val myTransaction = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.sender.equals(proxy.nodeInfo().legalIdentities.first()) }
+        val myTransaction = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
         return ResponseEntity.ok(myTransaction)
     }
 

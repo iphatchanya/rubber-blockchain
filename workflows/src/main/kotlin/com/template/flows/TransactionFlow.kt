@@ -65,7 +65,7 @@ object TransactionFlow {
 
             //Generating State for transfer
             progressTracker.currentStep = GENERATING_TRANSACTION
-            val output = TransactionState(UUID.randomUUID(), AnonymousParty(myKey), rubberType, volume, price, targetAccountAnonymousParty)
+            val output = TransactionState(AnonymousParty(myKey), rubberType, volume, price, targetAccountAnonymousParty, UUID.randomUUID())
             val transactionBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities.first())
             transactionBuilder.addOutputState(output)
                     .addCommand(TransactionContract.Commands.Create(), listOf(targetAccountAnonymousParty.owningKey, myKey))
@@ -101,7 +101,7 @@ object TransactionFlow {
             //Extract account information from transaction
             val transactionSigner = object : SignTransactionFlow(counterpartySession) {
                 override fun checkTransaction(tx: SignedTransaction) {
-                    val keyStateMovedTo = tx.coreTransaction.outRefsOfType(TransactionState::class.java).first().state.data.recipient
+                    val keyStateMovedTo = tx.coreTransaction.outRefsOfType(TransactionState::class.java).first().state.data.destination
                     keyStateMovedTo?.let {
                         accountMovedTo.set(accountService.accountInfo(keyStateMovedTo.owningKey)?.state?.data)
                     }

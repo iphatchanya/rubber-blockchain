@@ -20,7 +20,7 @@ class TransactionContract : Contract {
                 "No input when create." using (tx.inputStates.isEmpty())
                 "Only one output state should be created." using (tx.outputStates.size == 1)
                 val out: TransactionState = tx.outputStates.first() as TransactionState
-                "The source and the destination cannot be same entity." using (out.sender != out.recipient)
+                "The source and the destination cannot be same entity." using (out.source != out.destination)
 //                "All of the participants must be signers." using (signers.containsAll(out.participants.map { it.owningKey }))
                 "The rubber type must not empty." using (out.rubberType.isNotEmpty())
                 "The volume must greater than 0." using (out.volume > 0)
