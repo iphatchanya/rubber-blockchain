@@ -31,11 +31,11 @@ class ViewInboxByAccount(
             "\n" +" Invoice State : Invoice ID = " + it.state.data.invoiceID +
                 ", Source = " + it.state.data.sender + ", Rubber type = " + it.state.data.rubberType +
                 ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
-                ", Destination = " + it.state.data.recipient.toString() +
+                ", Destination = " + it.state.data.recipient.toString()
 //            "\n" + "Invoice State : " + it.state.data
 //            "\n" + "State data = " + it.state.data.participants +
-                    "\n" + "SubFlowSender = " + accountService.accountInfo(it.state.data.sender.toString()).single() +
-                    "\n" + "SubFlowRecipient = " + accountService.accountInfo(it.state.data.recipient.toString()).single()
+//                    "\n" + "SubFlowSender = " + accountService.accountInfo(it.state.data.sender.toString()).single() +
+//                    "\n" + "SubFlowRecipient = " + accountService.accountInfo(it.state.data.recipient.toString()).single()
 
 
         }
