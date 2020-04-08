@@ -34,8 +34,8 @@ class ViewInboxByAccount(
                 ", Destination = " + it.state.data.recipient.toString() +
 //            "\n" + "Invoice State : " + it.state.data
 //            "\n" + "State data = " + it.state.data.participants +
-                    "\n" + "SubFlowSender = " + accountService.accountInfo(it.state.data.sender.toString()).single().state.data +
-                    "\n" + "SubFlowRecipient = " + accountService.accountInfo(it.state.data.recipient.toString()).single().state.data
+                    "\n" + "SubFlowSender = " + accountService.accountInfo(it.state.data.sender.toString()).single() +
+                    "\n" + "SubFlowRecipient = " + accountService.accountInfo(it.state.data.recipient.toString()).single()
 
 
         }
