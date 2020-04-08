@@ -59,17 +59,17 @@ class Controller(rpc: NodeRPCConnection) {
     @GetMapping(value = "getAllUser", produces = ["text/plain"])
 //    private fun getAllUser() = proxy.vaultQueryBy<UserState>().states.toString()
 //    private fun getAllUser() = proxy.vaultQueryBy<TemplateState>().states.toString()
-    private fun getAllUser() = proxy.startFlow(::AllAccounts).returnValue.getOrThrow().map{it.state.data}
+    private fun getAllUser() = proxy.startFlow(::AllAccounts).returnValue.getOrThrow()
 //    private fun getAllUser() : ResponseEntity<List<StateAndRef<AllAccounts>>> {
 //        return ResponseEntity.ok(proxy.vaultQueryBy<AllAccounts>().states)
 //    }
 //    private fun getAllUser() = List<StateAndRef<AccountInfo>> = accountService.allAccounts()
 
     @GetMapping(value = "getAllTransaction", produces = ["text/plain"])
-//    private fun getAllTransation() = proxy.vaultQueryBy<TemplateState>().states.toString()
-    private fun getAllTransaction() : ResponseEntity<List<StateAndRef<TemplateState>>> {
-        return ResponseEntity.ok(proxy.vaultQueryBy<TemplateState>().states)
-    }
+    private fun getAllTransation() = proxy.vaultQueryBy<TemplateState>().states.toString()
+//    private fun getAllTransaction() : ResponseEntity<List<StateAndRef<TemplateState>>> {
+//        return ResponseEntity.ok(proxy.vaultQueryBy<TemplateState>().states)
+//    }
 
 //    @GetMapping(value = "getAllRecord", produces = ["text/plain"])
 //    private fun getAllRecord() = proxy.vaultQueryBy<TemplateState>().states.toString()
