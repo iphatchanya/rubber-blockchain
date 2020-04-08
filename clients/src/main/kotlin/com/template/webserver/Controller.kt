@@ -47,14 +47,19 @@ class Controller(rpc: NodeRPCConnection) {
     @GetMapping(value = [ "me" ])
     fun whoami() = mapOf("me" to myLegalName)
 
-//    @GetMapping(value = [ "peers" ], produces = [MediaType.APPLICATION_JSON_VALUE])
-//    fun getPeers(): Map<String, List<CordaX500Name>> {
-//        val nodeInfo = proxy.networkMapSnapshot()
-//        return mapOf("peers" to nodeInfo
-//                .map { it.legalIdentities.first().name }
-//                //filter out myself, notary and eventual network map started by driver
-//                .filter { it.organisation !in (SERVICE_NAMES + myLegalName.organisation) })
-//    }
+    @GetMapping(value = [ "peers" ], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getPeers(): Map<String, List<CordaX500Name>> {
+        val nodeInfo = proxy.networkMapSnapshot()
+        return mapOf("peers" to nodeInfo
+                .map { it.legalIdentities.first().name }
+                //filter out myself, notary and eventual network map started by driver
+                .filter { it.organisation !in (listOf("Admin", "Network Map Service") + myLegalName.organisation) })
+    }
+
+    @GetMapping(value = [ "getRecords" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    fun getRecords() : ResponseEntity<List<StateAndRef<TemplateState>>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TemplateState>().states)
+    }
 
     @GetMapping(value = "getAllUser", produces = ["text/plain"])
 //    private fun getAllUser() = proxy.vaultQueryBy<UserState>().states.toString()
@@ -71,47 +76,11 @@ class Controller(rpc: NodeRPCConnection) {
 //        return ResponseEntity.ok(proxy.vaultQueryBy<TemplateState>().states)
 //    }
 
-//    @GetMapping(value = "getAllRecord", produces = ["text/plain"])
-//    private fun getAllRecord() = proxy.vaultQueryBy<TemplateState>().states.toString()
-
-//    @PostMapping(value = "users" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
-//    fun users(request: HttpServletRequest): ResponseEntity<String> {
-//        val name = request.getParameter("name").toString()
-//        val certification = request.getParameter("certification").toString()
-//        val destination = request.getParameter("destination")
-//        val destinationParty = CordaX500Name.parse(destination)
-//        val partyDestination = proxy.wellKnownPartyFromX500Name(destinationParty) ?:
-//        return ResponseEntity.badRequest().body("Party named $destination cannot be found.\n")
-//
-//        return try {
-//            val signedTx = proxy.startTrackedFlow(::UserProfile, name, certification, partyDestination).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Register successfully.")
-//
-//        } catch (ex: Throwable) {
-//            logger.error(ex.message, ex)
-//            ResponseEntity.badRequest().body(ex.message!!)
-//        }
-//    }
-//
-//    @PostMapping(value = "addRecord" , headers = [ "Content-Type=multipart/form-data" ])
-//    fun addRecord(request: HttpServletRequest): ResponseEntity<String> {
-//        val rubberType = request.getParameter("rubberType").toString()
-//        val volume = request.getParameter("volume").toInt()
-//        val price = request.getParameter("price").toInt()
-//        val destination = request.getParameter("destination")
-//        val destinationParty = CordaX500Name.parse(destination)
-//        val partyDestination = proxy.wellKnownPartyFromX500Name(destinationParty) ?:
-//        return ResponseEntity.badRequest().body("Party named $destination cannot be found.\n")
-//
-//        return try {
-//            val signedTx = proxy.startTrackedFlow(::NewRecord, rubberType, volume, price, partyDestination).returnValue.getOrThrow()
-//            ResponseEntity.status(HttpStatus.CREATED).body("Register successfully.")
-//
-//        } catch (ex: Throwable) {
-//            logger.error(ex.message, ex)
-//            ResponseEntity.badRequest().body(ex.message!!)
-//        }
-//    }
+    @GetMapping(value = [ "getMyTransaction" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    fun getMyTransaction(): ResponseEntity<List<StateAndRef<TemplateState>>>  {
+        val myTransaction = proxy.vaultQueryBy<TemplateState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
+        return ResponseEntity.ok(myTransaction)
+    }
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
     fun createNewAccount(request: HttpServletRequest): ResponseEntity<String> {
