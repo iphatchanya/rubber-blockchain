@@ -29,9 +29,9 @@ class ViewInboxByAccount(
         ).states.map {
 //            "\n" +" Invoice State : " + it.state.data
             "\n" +" Invoice State : Invoice ID = " + it.state.data.invoiceID +
-                ", Source = " + it.state.data.source.to(listOf(myAccount.name)) + ", Rubber type = " + it.state.data.rubberType +
+                ", Source = " + accountService.accountInfo(it.state.data.source.toString()) + ", Rubber type = " + it.state.data.rubberType +
                 ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
-                ", Destination = " + it.state.data.destination
+                ", Destination = " + accountService.accountInfo(it.state.data.destination.toString())
         }
 
         return invoices
