@@ -4,6 +4,7 @@ import com.r3.corda.lib.accounts.workflows.flows.AllAccounts
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
+import com.template.flows.ViewInboxByAccount
 import com.template.states.TransactionState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.identity.CordaX500Name
@@ -15,10 +16,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
 
 @RestController
@@ -50,32 +48,42 @@ class Controller(rpc: NodeRPCConnection) {
                 .filter { it.organisation !in (listOf("Admin", "Network Map Service") + myLegalName.organisation) })
     }
 
-    @GetMapping(value = [ "getRecords" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-//    fun getRecords() : ResponseEntity<List<StateAndRef<TransactionState>>> {
-//        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
-//    }
-    private fun getRecords() = proxy.vaultQueryBy<TransactionState>().states
 
     @GetMapping(value = "getAllUser", produces = ["text/plain"])
-//    private fun getAllUser() = proxy.vaultQueryBy<UserState>().states.toString()
-//    private fun getAllUser() = proxy.vaultQueryBy<TemplateState>().states.toString()
-    private fun getAllUser() = proxy.startFlow(::AllAccounts).returnValue.getOrThrow()
-//    private fun getAllUser() : ResponseEntity<List<StateAndRef<AllAccounts>>> {
-//        return ResponseEntity.ok(proxy.vaultQueryBy<AllAccounts>().states)
-//    }
-//    private fun getAllUser() = List<StateAndRef<AccountInfo>> = accountService.allAccounts()
+    private fun getAllUser() = proxy.startFlow(::AllAccounts).returnValue.getOrThrow().map{it.state.data}
+
+    @GetMapping(value = "getAllUser2", produces = ["text/plain"])
+    private fun getAllUser2() = proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map { it }
+
+    @GetMapping(value = "getAllUser3", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllUser3() = proxy.startFlow(::AllAccounts).returnValue.getOrThrow().map{it.state.data}
+
+    @GetMapping(value = "getAllUser4", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllUser4() = proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map { it }
 
     @GetMapping(value = "getAllTransaction", produces = ["text/plain"])
     private fun getAllTransation() = proxy.vaultQueryBy<TransactionState>().states.toString()
-//    private fun getAllTransaction() : ResponseEntity<List<StateAndRef<TemplateState>>> {
-//        return ResponseEntity.ok(proxy.vaultQueryBy<TemplateState>().states)
-//    }
 
-    @GetMapping(value = [ "getMyTransaction" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    fun getMyTransaction(): ResponseEntity<List<StateAndRef<TransactionState>>>  {
-        val myTransaction = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
-        return ResponseEntity.ok(myTransaction)
-    }
+    @GetMapping(value = "getAllTransaction2", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllTransation2() = proxy.vaultQueryBy<TransactionState>().states.toString()
+
+    @GetMapping(value = [ "getAllTransaction3" ], produces = ["text/plain"])
+    private fun getAllTransaction3() = proxy.startFlowDynamic(ViewInboxByAccount::class.java).returnValue.getOrThrow().map{ it }
+
+    @GetMapping(value = [ "getAllTransaction4" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllTransaction4() = proxy.startFlowDynamic(ViewInboxByAccount::class.java).returnValue.getOrThrow().map{ it }
+
+    @GetMapping(value = [ "getAllTransaction5" ], produces = ["text/plain"])
+    private fun getAllTransaction5(@PathVariable("accountName") accountName: String) = proxy.startFlow(::ViewInboxByAccount, accountName).returnValue.getOrThrow().map{ it }
+
+    @GetMapping(value = [ "getAllTransaction6" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllTransaction6(@PathVariable("accountName") accountName: String) = proxy.startFlow(::ViewInboxByAccount, accountName).returnValue.getOrThrow().map{ it }
+
+    @GetMapping(value = [ "getMyTransaction" ], produces = ["text/plain" ])
+    private fun getMyTransaction() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
+
+    @GetMapping(value = [ "getMyTransaction2" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getMyTransaction2() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
     fun createNewAccount(request: HttpServletRequest): ResponseEntity<String> {
