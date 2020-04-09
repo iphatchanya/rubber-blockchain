@@ -29,10 +29,10 @@ class ViewInboxByAccount(
         ).states.map {
 //            "\n" +" Invoice State : " + it.state.data
             "\n" +" Invoice State : Invoice ID = " + it.state.data.invoiceID +
-                ", Source = " + accountService.accountInfo(it.state.data.source.toString()).single().state.data +
+                ", Source = " + listOf((accountService.accountInfo(it.state.data.source.toString()).single().state.data).name) +
                 ", Rubber type = " + it.state.data.rubberType +
                 ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
-                ", Destination = " + accountService.accountInfo(it.state.data.destination.toString()).single()
+                ", Destination = " + accountService.accountInfo(it.state.data.destination.toString())
         }
 
         return invoices
