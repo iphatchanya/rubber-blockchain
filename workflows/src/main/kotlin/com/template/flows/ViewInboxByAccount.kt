@@ -24,12 +24,12 @@ class ViewInboxByAccount(
                 externalIds = listOf(myAccount.identifier.id)
         )
         val invoices = serviceHub.vaultService.queryBy(
-                contractStateType = TransactionState::class.java,
-                criteria = criteria
+                contractStateType = TransactionState::class.java
+//                criteria = criteria
         ).states.map {
 //            "\n" +" Invoice State : " + it.state.data
             "\n" +" Invoice State : Invoice ID = " + it.state.data.invoiceID +
-                ", Source = " + listOf((accountService.accountInfo(it.state.data.source.toString()).single().state.data).name) +
+                ", Source = " + it.state.data.source +
                 ", Rubber type = " + it.state.data.rubberType +
                 ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
                 ", Destination = " + accountService.accountInfo(it.state.data.destination.toString())
