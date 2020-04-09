@@ -51,9 +51,10 @@ class Controller(rpc: NodeRPCConnection) {
     }
 
     @GetMapping(value = [ "getRecords" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    fun getRecords() : ResponseEntity<List<StateAndRef<TransactionState>>> {
-        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
-    }
+//    fun getRecords() : ResponseEntity<List<StateAndRef<TransactionState>>> {
+//        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
+//    }
+    private fun getRecords() = proxy.vaultQueryBy<TransactionState>().states
 
     @GetMapping(value = "getAllUser", produces = ["text/plain"])
 //    private fun getAllUser() = proxy.vaultQueryBy<UserState>().states.toString()
