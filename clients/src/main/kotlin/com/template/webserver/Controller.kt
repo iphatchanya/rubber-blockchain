@@ -65,19 +65,25 @@ class Controller(rpc: NodeRPCConnection) {
     private fun getAllTransation() = proxy.vaultQueryBy<TransactionState>().states.toString()
 
     @GetMapping(value = "getAllTransaction2", produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getAllTransation2() = proxy.startFlow(::TransactionState, ).returnValue.getOrThrow().map{it.state.data}
+    private fun getAllTransation2() : ResponseEntity<List<StateAndRef<TransactionState>>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
+    }
 
     @GetMapping(value = [ "getAllTransaction3" ], produces = ["text/plain"])
     private fun getAllTransaction3() = proxy.startFlowDynamic(ViewInboxByAccount::class.java).returnValue.getOrThrow().map{ it }
 
-//    @GetMapping(value = [ "getAllTransaction4" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-//    private fun getAllTransaction4() = proxy.startFlowDynamic(ViewInboxByAccount::class.java).returnValue.getOrThrow().map{ it }
+    @GetMapping(value = [ "getAllTransaction4" ], produces = ["text/plain"])
+    private fun getAllTransation4() : ResponseEntity<List<StateAndRef<TransactionState>>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
+    }
 
     @GetMapping(value = [ "getAllTransaction5" ], produces = ["text/plain"])
     private fun getAllTransaction5(@PathVariable("accountName") accountName: String) = proxy.startFlow(::ViewInboxByAccount, accountName).returnValue.getOrThrow().map{ it }
 
-//    @GetMapping(value = [ "getAllTransaction6" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-//    private fun getAllTransaction6(@PathVariable("accountName") accountName: String) = proxy.startFlow(::ViewInboxByAccount, accountName).returnValue.getOrThrow().map{ it }
+    @GetMapping(value = [ "getAllTransaction6" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllTransation6() : ResponseEntity<List<StateAndRef<TransactionState>>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
+    }
 
     @GetMapping(value = [ "getMyTransaction" ], produces = ["text/plain" ])
     private fun getMyTransaction() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
