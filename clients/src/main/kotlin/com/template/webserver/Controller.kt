@@ -6,6 +6,7 @@ import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
 import com.template.states.TransactionState
 import net.corda.core.identity.CordaX500Name
+import net.corda.core.internal.declaredField
 import net.corda.core.messaging.startTrackedFlow
 import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.utilities.getOrThrow
@@ -66,19 +67,20 @@ class Controller(rpc: NodeRPCConnection) {
                     ", Rubber type = " + it.state.data.rubberType +
                     ", Volume = " + it.state.data.volume +
                     ", Price = " + it.state.data.price +
-                    ", Destination = " + it.state.data.destination.nameOrNull().toString() + " ]"})
+                    ", Destination = " + proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map {it.state.data.name}.contains(it.state.data.destination.toString()) + " ]"})
     }
 
     @GetMapping(value = "getAllTransactionByUser3", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllTransactionByUser3() : ResponseEntity<List<String>> {
         return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
             "[ Invoice State : Invoice ID = " + it.state.data.invoiceID +
-                    ", Source = " + it.state.data.source.nameOrNull() +
+                    ", Source = " + it.state.data.source.also { proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map {it.state.data.name} } +
                     ", Rubber type = " + it.state.data.rubberType +
                     ", Volume = " + it.state.data.volume +
                     ", Price = " + it.state.data.price +
-                    ", Destination = " + it.state.data.destination.nameOrNull().toString() + " ]"})
+                    ", Destination = " + it.state.data.destination.apply { proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map {it.state.data.name} } + " ]"})
     }
+
 
     @GetMapping(value = "getAllTransactionByUser4", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllTransactionByUser4() : ResponseEntity<List<String>> {
