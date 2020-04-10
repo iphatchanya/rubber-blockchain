@@ -65,8 +65,13 @@ class Controller(rpc: NodeRPCConnection) {
     private fun getAllTransation() = proxy.vaultQueryBy<TransactionState>().states.toString()
 
     @GetMapping(value = "getAllTransaction2", produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getAllTransation2() : ResponseEntity<List<StateAndRef<TransactionState>>> {
-        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
+    private fun getAllTransation2() : ResponseEntity<List<String>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
+            "\n" +" Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                ", Source = " + it.state.data.source +
+                ", Rubber type = " + it.state.data.rubberType +
+                ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
+                ", Destination = " + it.state.data.destination })
     }
 
     @GetMapping(value = [ "getAllTransaction3" ], produces = ["text/plain"])
@@ -97,11 +102,29 @@ class Controller(rpc: NodeRPCConnection) {
         return ResponseEntity.ok(myious)
     }
 
+    @GetMapping(value = "getAllTransaction9", produces = ["text/plain"])
+    private fun getAllTransation9() : ResponseEntity<List<String>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
+            "\n" +" Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                    ", Source = " + it.state.data.source +
+                    ", Rubber type = " + it.state.data.rubberType +
+                    ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
+                    ", Destination = " + it.state.data.destination })
+    }
+
     @GetMapping(value = [ "getMyTransaction" ], produces = ["text/plain" ])
     private fun getMyTransaction() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
 
     @GetMapping(value = [ "getMyTransaction2" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getMyTransaction2() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
+
+    @GetMapping(value = [ "getMyTransaction3" ], produces = ["text/plain" ])
+    private fun getMyTransaction3() = proxy.vaultQueryBy<TransactionState>().states.map {"\n" +" Invoice State : Invoice ID = " + it.state.data.invoiceID +
+            ", Source = " + it.state.data.source +
+            ", Rubber type = " + it.state.data.rubberType +
+            ", Volume = " + it.state.data.volume + ", Price = " + it.state.data.price +
+            ", Destination = " + it.state.data.destination }
+
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
     fun createNewAccount(request: HttpServletRequest): ResponseEntity<String> {
