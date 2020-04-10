@@ -58,7 +58,7 @@ class Controller(rpc: NodeRPCConnection) {
                 ", Price = " + it.state.data.price +
                 ", Destination = " + it.state.data.destination + " ]"})
     }
-    
+
 
     @GetMapping(value = "getAllTransactionByAdmin", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllTransactionByAdmin() : ResponseEntity<List<String>> {
