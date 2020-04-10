@@ -4,11 +4,8 @@ import com.r3.corda.lib.accounts.workflows.flows.AllAccounts
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
-import com.template.flows.ViewInboxByAccount
 import com.template.states.TransactionState
-import net.corda.core.contracts.StateAndRef
 import net.corda.core.identity.CordaX500Name
-import net.corda.core.messaging.startFlow
 import net.corda.core.messaging.startTrackedFlow
 import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.utilities.getOrThrow
@@ -30,11 +27,6 @@ class Controller(rpc: NodeRPCConnection) {
     private val proxy = rpc.proxy
     private val myLegalName = rpc.proxy.nodeInfo().legalIdentities.first().name
 
-//    @GetMapping(value = "/templateendpoint", produces = arrayOf("text/plain"))
-//    private fun templateendpoint(): String {
-//        return "Define an endpoint here.PeterLi"
-//    }
-
     // Reture node's name
     @GetMapping(value = [ "me" ])
     fun whoami() = mapOf("me" to myLegalName)
@@ -50,41 +42,74 @@ class Controller(rpc: NodeRPCConnection) {
 
     @GetMapping(value = "getAllUser", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllUser() = proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map {
-        "AccountInfo : Host = " + it.state.data.host +
+        "[ AccountInfo : Host = " + it.state.data.host +
         ", ID = " + it.state.data.identifier.id +
-        ", Name = " + it.state.data.name }
-    
+        ", Name = " + it.state.data.name + " ]"}
+
 
     @GetMapping(value = "getAllTransactionByUser", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllTransactionByUser() : ResponseEntity<List<String>> {
         return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
-                "Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                "[ Invoice State : Invoice ID = " + it.state.data.invoiceID +
                 ", Source = " + it.state.data.source +
                 ", Rubber type = " + it.state.data.rubberType +
                 ", Volume = " + it.state.data.volume +
                 ", Price = " + it.state.data.price +
-                ", Destination = " + it.state.data.destination })
+                ", Destination = " + it.state.data.destination + " ]"})
+    }
+
+    @GetMapping(value = "getAllTransactionByUser2", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllTransactionByUser2() : ResponseEntity<List<String>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
+            "[ Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                    ", Source = " + it.state.data.source.equals(proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map {it.state.data.name}) +
+                    ", Rubber type = " + it.state.data.rubberType +
+                    ", Volume = " + it.state.data.volume +
+                    ", Price = " + it.state.data.price +
+                    ", Destination = " + it.state.data.destination.nameOrNull().toString() + " ]"})
+    }
+
+    @GetMapping(value = "getAllTransactionByUser3", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllTransactionByUser3() : ResponseEntity<List<String>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
+            "[ Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                    ", Source = " + it.state.data.source.nameOrNull() +
+                    ", Rubber type = " + it.state.data.rubberType +
+                    ", Volume = " + it.state.data.volume +
+                    ", Price = " + it.state.data.price +
+                    ", Destination = " + it.state.data.destination.nameOrNull().toString() + " ]"})
+    }
+
+    @GetMapping(value = "getAllTransactionByUser4", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getAllTransactionByUser4() : ResponseEntity<List<String>> {
+        return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
+            "[ Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                    ", Source = " + it.state.data.source.to(proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map {it.state.data.name}) +
+                    ", Rubber type = " + it.state.data.rubberType +
+                    ", Volume = " + it.state.data.volume +
+                    ", Price = " + it.state.data.price +
+                    ", Destination = " + it.state.data.destination.toString().to(proxy.startFlowDynamic(AllAccounts::class.java).returnValue.getOrThrow().map {it.state.data.name}) + " ]"})
     }
 
     @GetMapping(value = "getAllTransactionByAdmin", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllTransactionByAdmin() : ResponseEntity<List<String>> {
         return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
-                "State Info : " + it.state.toString() +
+                "[ State Info : " + it.state.toString() +
                 ", Invoice State : Invoice ID = " + it.state.data.invoiceID +
                 ", Source = " + it.state.data.source +
                 ", Rubber type = " + it.state.data.rubberType +
                 ", Volume = " + it.state.data.volume +
                 ", Price = " + it.state.data.price +
-                ", Destination = " + it.state.data.destination })
+                ", Destination = " + it.state.data.destination + " ]"})
     }
 
     @GetMapping(value = [ "getMyTransaction" ], produces = ["text/plain" ])
     private fun getMyTransaction() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
 
     @GetMapping(value = [ "getMyTransaction2" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getMyTransaction2() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
+    private fun getMyTransaction2() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.equals(proxy.nodeInfo().legalIdentities.first()) }
 
-    @GetMapping(value = [ "getMyTransaction3" ], produces = ["text/plain" ])
+    @GetMapping(value = [ "getMyTransaction3" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getMyTransaction3() = proxy.vaultQueryBy<TransactionState>().states.map {
             " Invoice State : Invoice ID = " + it.state.data.invoiceID +
             ", Source = " + it.state.data.source +
