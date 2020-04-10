@@ -65,7 +65,7 @@ class Controller(rpc: NodeRPCConnection) {
     private fun getAllTransation() = proxy.vaultQueryBy<TransactionState>().states.toString()
 
     @GetMapping(value = "getAllTransaction2", produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getAllTransation2() = proxy.vaultQueryBy<TransactionState>().states.toString()
+    private fun getAllTransation2() = proxy.startFlow(::TransactionState, ).returnValue.getOrThrow().map{it.state.data}
 
     @GetMapping(value = [ "getAllTransaction3" ], produces = ["text/plain"])
     private fun getAllTransaction3() = proxy.startFlowDynamic(ViewInboxByAccount::class.java).returnValue.getOrThrow().map{ it }
