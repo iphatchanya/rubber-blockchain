@@ -85,6 +85,18 @@ class Controller(rpc: NodeRPCConnection) {
         return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states)
     }
 
+    @GetMapping(value = [ "getAllTransaction7" ], produces = ["text/plain" ])
+    fun getAllTransaction7(): ResponseEntity<List<StateAndRef<TransactionState>>>  {
+        val myious = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
+        return ResponseEntity.ok(myious)
+    }
+
+    @GetMapping(value = [ "getAllTransaction8" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    fun getAllTransaction8(): ResponseEntity<List<StateAndRef<TransactionState>>>  {
+        val myious = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
+        return ResponseEntity.ok(myious)
+    }
+
     @GetMapping(value = [ "getMyTransaction" ], produces = ["text/plain" ])
     private fun getMyTransaction() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
 
