@@ -14,5 +14,4 @@ class TransactionState(val source: AnonymousParty,
                             val destination: AnonymousParty,
                             val invoiceID: UUID) : ContractState {
     override val participants: List<AbstractParty> get() = listOfNotNull(destination,source).map { it }
-//    override val participants: List<AbstractParty> get() = listOf(destination,source)
 }

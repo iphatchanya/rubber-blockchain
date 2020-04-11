@@ -72,34 +72,11 @@ class Controller(rpc: NodeRPCConnection) {
                 ", Destination = " + it.state.data.destination + " ]"})
     }
 
-    @GetMapping(value = [ "getMyTransaction" ], produces = ["text/plain" ])
-    private fun getMyTransaction() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
 
-    @GetMapping(value = [ "getMyTransaction2" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getMyTransaction2() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
-
-    @GetMapping(value = [ "getMyTransaction3" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getMyTransaction3() = proxy.vaultQueryBy<TransactionState>().states.map {
-            " Invoice State : Invoice ID = " + it.state.data.invoiceID +
-            ", Source = " + it.state.data.source +
-            ", Rubber type = " + it.state.data.rubberType +
-            ", Volume = " + it.state.data.volume +
-            ", Price = " + it.state.data.price +
-            ", Destination = " + it.state.data.destination }
-
-    @GetMapping(value = [ "getMyTransaction4" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getMyTransaction4(@PathVariable("accountName") accountName: String) {
+    @GetMapping(value = [ "getMyTransaction/{accountName}" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getMyTransaction(@PathVariable("accountName") accountName: String) {
         proxy.startFlowDynamic(ViewInboxByAccount::class.java, accountName).returnValue.getOrThrow()
     }
-
-    @GetMapping(value = [ "getMyTransaction5" ], produces = ["text/plain" ])
-    private fun getMyTransaction5() = proxy.vaultQueryBy<TransactionState>().states.map {
-        " Invoice State : Invoice ID = " + it.state.data.invoiceID +
-                ", Source = " + it.state.data.source +
-                ", Rubber type = " + it.state.data.rubberType +
-                ", Volume = " + it.state.data.volume +
-                ", Price = " + it.state.data.price +
-                ", Destination = " + it.state.data.destination }
 
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
