@@ -4,9 +4,9 @@ import com.r3.corda.lib.accounts.workflows.flows.AllAccounts
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
+import com.template.flows.ViewInboxByAccount
 import com.template.states.TransactionState
 import net.corda.core.identity.CordaX500Name
-import net.corda.core.internal.declaredField
 import net.corda.core.messaging.startTrackedFlow
 import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.utilities.getOrThrow
@@ -76,7 +76,7 @@ class Controller(rpc: NodeRPCConnection) {
     private fun getMyTransaction() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
 
     @GetMapping(value = [ "getMyTransaction2" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getMyTransaction2() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.equals(proxy.nodeInfo().legalIdentities.first()) }
+    private fun getMyTransaction2() = proxy.vaultQueryBy<TransactionState>().states.filter { it.state.data.source.equals(proxy.nodeInfo().legalIdentities.first()) }
 
     @GetMapping(value = [ "getMyTransaction3" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getMyTransaction3() = proxy.vaultQueryBy<TransactionState>().states.map {
@@ -86,6 +86,25 @@ class Controller(rpc: NodeRPCConnection) {
             ", Volume = " + it.state.data.volume +
             ", Price = " + it.state.data.price +
             ", Destination = " + it.state.data.destination }
+
+    @GetMapping(value = [ "getMyTransaction4" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+    private fun getMyTransaction4(@PathVariable("accountName") accountName: String) {
+        proxy.startFlowDynamic(ViewInboxByAccount::class.java, accountName).returnValue.getOrThrow()
+    }
+
+    @GetMapping(value = [ "getMyTransaction5" ], produces = ["text/plain" ])
+    private fun getMyTransaction5() = proxy.vaultQueryBy<TransactionState>().states.map {
+        " Invoice State : Invoice ID = " + it.state.data.invoiceID +
+                ", Source = " + it.state.data.source +
+                ", Rubber type = " + it.state.data.rubberType +
+                ", Volume = " + it.state.data.volume +
+                ", Price = " + it.state.data.price +
+                ", Destination = " + it.state.data.destination }
+
+    @GetMapping(value = [ "getMyTransaction5" ], produces = ["text/plain" ])
+    private fun getMyTransaction5(@PathVariable("accountName") accountName: String) {
+        proxy.startFlowDynamic(ViewInboxByAccount::class.java, accountName).returnValue.getOrThrow()
+    }
 
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
