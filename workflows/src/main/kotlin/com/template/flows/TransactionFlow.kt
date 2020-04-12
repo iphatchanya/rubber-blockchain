@@ -56,7 +56,7 @@ object TransactionFlow {
         @Suspendable
         override fun call(): String {
 
-            //Generate key for transaction (create from destination to source)
+            //Generate key for transaction
             progressTracker.currentStep = GENERATING_KEYS
             val myAccount = accountService.accountInfo(source).single().state.data
             val myKey = subFlow(NewKeyForAccount(myAccount.identifier.id)).owningKey
@@ -69,10 +69,6 @@ object TransactionFlow {
             val transactionBuilder = TransactionBuilder(serviceHub.networkMapCache.notaryIdentities.first())
             transactionBuilder.addOutputState(output)
                     .addCommand(TransactionContract.Commands.Create(), listOf(targetAccountAnonymousParty.owningKey, myKey))
-
-//            // Verify that the transaction is valid.
-//            progressTracker.currentStep = VERIFYING_TRANSACTION
-//            transactionBuilder.verify(serviceHub)
 
             //Pass along Transaction
             progressTracker.currentStep = SIGNING_TRANSACTION

@@ -73,10 +73,10 @@ class Controller(rpc: NodeRPCConnection) {
     }
 
 
-    @GetMapping(value = [ "getMyTransaction/{accountName}" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-    private fun getMyTransaction(@PathVariable("accountName") accountName: String) {
-        proxy.startFlowDynamic(ViewInboxByAccount::class.java, accountName).returnValue.getOrThrow()
-    }
+//    @GetMapping(value = [ "getMyTransaction" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
+//    private fun getMyTransaction(@PathVariable("accountName") accountName: String) {
+//        proxy.startFlowDynamic(ViewInboxByAccount::class.java, accountName).returnValue.getOrThrow()
+//    }
 
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
