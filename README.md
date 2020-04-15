@@ -6,6 +6,7 @@ The purpose of the project is to collect rubber transaction by the Corda ledger 
 ## Setting up
 In order to run the project, the following should be created/installed
 - Create a Linux (Ubuntu) based Virtual Machine in Azure
+    - Visit https://portal.azure.com
 
 - Install JAVA 8 JVM
     - Visit http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
