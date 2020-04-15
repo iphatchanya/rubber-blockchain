@@ -4,7 +4,6 @@ import com.r3.corda.lib.accounts.workflows.flows.AllAccounts
 import com.template.flows.CreateNewAccount
 import com.template.flows.ShareAccount
 import com.template.flows.TransactionFlow.AddTransaction
-import com.template.flows.ViewInboxByAccount
 import com.template.states.TransactionState
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.messaging.startTrackedFlow
@@ -71,12 +70,6 @@ class Controller(rpc: NodeRPCConnection) {
                 ", Price = " + it.state.data.price +
                 ", Destination = " + it.state.data.destination + " ]"})
     }
-
-
-//    @GetMapping(value = [ "getMyTransaction" ], produces = [MediaType.APPLICATION_JSON_VALUE ])
-//    private fun getMyTransaction(@PathVariable("accountName") accountName: String) {
-//        proxy.startFlowDynamic(ViewInboxByAccount::class.java, accountName).returnValue.getOrThrow()
-//    }
 
 
     @PostMapping(value = "createNewAccount" , headers = [ "Content-Type=application/x-www-form-urlencoded" ])
