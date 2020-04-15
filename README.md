@@ -6,15 +6,10 @@ The purpose of the project is to collect rubber transaction by the Corda ledger 
 ## Setting up
 In order to run the project, the following should be created/installed
 - Create a Linux (Ubuntu) based Virtual Machine in Azure
-    - Visit https://portal.azure.com
+    - https://portal.azure.com
 
 - Install JAVA 8 JVM
-    - Visit http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
-    - Scroll down to “Java SE Development Kit 8uXXX” (where “XXX” is the latest minor version number)
-    - Toggle “Accept License Agreement”
-    - Click the download link for jdk-8uXXX-windows-x64.exe (where “XXX” is the latest minor version number)
-    - Download and run the executable to install Java (use the default settings)
-    - Open a new command prompt and run java -version to test that Java is installed correctly
+    - http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
     
 - Install the project
     - Open a command prompt
@@ -23,8 +18,7 @@ In order to run the project, the following should be created/installed
     - Move to the folder created ```$ cd rubber-blockchain```
     
 - Install IntelliJ Editor (Optional)
-    - Visit https://www.jetbrains.com/idea/download/ 
-    - Click the download button
+    - https://www.jetbrains.com/idea/download/ 
 
 ## Run project
 Go into the project directory and deploy nodes by running : 
