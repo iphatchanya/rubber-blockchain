@@ -1,9 +1,9 @@
-#Senior Project : Rubber Blockchain
+# Senior Project : Rubber Blockchain
 My senior project in 4th year of Computer Science, Kasetsart University.
 
 The purpose of the project is to collect rubber transaction by the Corda ledger technology.
 
-##Setting up
+## Setting up
 In order to run the project, the following should be created/installed
 - Create a Linux (Ubuntu) based Virtual Machine in Azure
 
@@ -19,9 +19,9 @@ In order to run the project, the following should be created/installed
     - Open a command prompt
     - Clone the CorDapp example repo by running 
       ```git clone https://github.com/iphatchanya/rubber-blockchain.git```
-    - Move to the folder created cd rubber-blockchain
+    - Move to the folder created ```cd rubber-blockchain```
 
-##Run project
+## Run project
 Go into the project directory and deploy nodes by running : 
 ```
 ./gradlew deployNodes
@@ -33,7 +33,7 @@ Start the nodes by running :
 Now , you should have three Corda terminals opened automatically.
 
 
-###Creating Accounts
+### Creating Accounts
 Go to the Agriculturist's node and paste in the following code :
 ```
 flow start CreateNewAccount accountName: Ms.Garden
@@ -45,7 +45,7 @@ flow start CreateNewAccount accountName: Mr.Sale
 
 This is creating 1 account under Agriculturist's node and creating 1 account under Middleman's node.
 
-###Sharing Accounts
+### Sharing Accounts
 Go to the Agriculturist's node and paste in the following code :
 ```
 flow start ShareAccount accountNameShared: Ms.Garden, shareTo: Admin
@@ -58,7 +58,7 @@ flow start ShareAccount accountNameShared: Mr.Sale, shareTo: Agriculturist
 ```
 This is sharing account with their specific conterpartie's node or account.
 
-###Transaction 
+### Transaction 
 Go to the Agriculturist's node and paste in the following code:
 ```
 flow start AddTransaction source: Ms.Garden, rubberType: RRIT408, volume: 80, price: 400, destination: Mr.Sale 
@@ -66,7 +66,7 @@ flow start AddTransaction source: Ms.Garden, rubberType: RRIT408, volume: 80, pr
 This will send an invoice from Ms.Garden (Agriculturist's node) to Mr.Sale (Middleman's node) with 80 of RRIT408, and the total price is 400 Baht.
 
 
-###Run Server
+### Run Server
 ```
 ./gradlew runAgriculturistServer
 ./gradlew runMiddlemanServer
