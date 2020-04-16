@@ -16,9 +16,6 @@ In order to run the project, the following should be created/installed
     - Clone the CorDapp example repo by running 
       ```$ git clone https://github.com/iphatchanya/rubber-blockchain.git```
     - Move to the folder created ```$ cd rubber-blockchain```
-    
-- Install IntelliJ Editor (Optional)
-    - https://www.jetbrains.com/idea/download/ 
 
 ## Run project
 Go into the project directory and deploy nodes by running : 
