@@ -6,15 +6,16 @@ import net.corda.core.transactions.LedgerTransaction
 
 class TransactionContract : Contract {
     companion object {
+        // Used to identify our contract when building a transaction.
         const val ID = "com.template.contracts.TemplateContract"
     }
 
     override fun verify(tx: LedgerTransaction) {
         val command = tx.commands.requireSingleCommand<Commands.Create>()
 
-        requireThat {
-
-        }
+//        requireThat {
+//
+//        }
         when (command.value) {
             is Commands.Create -> requireThat {
                 "No input when create." using (tx.inputStates.isEmpty())
