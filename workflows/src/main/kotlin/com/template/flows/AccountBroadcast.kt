@@ -15,7 +15,7 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 
-class AccountBroadcastCopyReceiversFlow(
+class BroadcastToCarbonCopyReceiversFlow(
         private val owningAccount: AccountInfo,
         private val stateToBroadcast: StateAndRef<*>,
         private val carbonCopyReceivers: Collection<AccountInfo>? = null
@@ -32,7 +32,6 @@ class AccountBroadcastCopyReceiversFlow(
         }
     }
 }
-
 
 @StartableByRPC
 @StartableByService
@@ -66,7 +65,7 @@ class GetAllInterestedAccountsFlow(val accountId: UUID) : FlowLogic<List<Account
             loadedAccount?.broadcastAccounts?.size
             refHolder.set(loadedAccount)
         })
-        return refHolder.get()?.let { it.broadcastAccounts?.mapNotNull(getAccountFromAccountId(accountService)) }
+        return refHolder.get()?.let { it.broadcastAccounts?.mapNotNull(getAccountFromAccountId(accountService as KeyManagementBackedAccountService)) }
                 ?: listOf()
     }
 
