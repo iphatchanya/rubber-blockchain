@@ -106,6 +106,7 @@ object TransactionFlow {
                     }
                 }
             }
+
             //Record and finalize transaction
             val transaction = subFlow(transactionSigner)
             if (counterpartySession.counterparty != serviceHub.myInfo.legalIdentities.first()) {

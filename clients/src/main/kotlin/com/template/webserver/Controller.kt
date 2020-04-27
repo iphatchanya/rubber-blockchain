@@ -47,7 +47,7 @@ class Controller(rpc: NodeRPCConnection) {
         ", Name = " + it.state.data.name + " ]"}
 
 
-    @GetMapping(value = "getAllTransactionByUser", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    @GetMapping(value = "getAllTransaction", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllTransactionByUser() : ResponseEntity<List<String>> {
         return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
                 "[ Invoice State : Invoice ID = " + it.state.data.invoiceID +
@@ -59,7 +59,7 @@ class Controller(rpc: NodeRPCConnection) {
     }
 
 
-    @GetMapping(value = "getAllTransactionByAdmin", produces = [MediaType.APPLICATION_JSON_VALUE ])
+    @GetMapping(value = "getAllTransactionWithStateInfo", produces = [MediaType.APPLICATION_JSON_VALUE ])
     private fun getAllTransactionByAdmin() : ResponseEntity<List<String>> {
         return ResponseEntity.ok(proxy.vaultQueryBy<TransactionState>().states.map {
                 "[ State Info : " + it.state.toString() +

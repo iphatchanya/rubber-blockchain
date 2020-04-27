@@ -15,7 +15,7 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 
-class BroadcastToCarbonCopyReceiversFlow(
+class AccountBroadcastCopyReceiversFlow(
         private val owningAccount: AccountInfo,
         private val stateToBroadcast: StateAndRef<*>,
         private val carbonCopyReceivers: Collection<AccountInfo>? = null
